@@ -1,0 +1,1701 @@
+{
+  "name": "Геренація проектів через телеграм",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "responseFormat": "text"
+        }
+      },
+      "id": "b3fbaf21-1d38-4991-af36-1aec43ff1ba4",
+      "name": "gpt-4o-mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        2464,
+        752
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "YtlwhuleXCmGyGtC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "responseFormat": "json_object"
+        }
+      },
+      "id": "0ce83952-25f7-4237-b9ea-dc12b28f3055",
+      "name": "gpt-4o LLM",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        896,
+        576
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "YtlwhuleXCmGyGtC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v20.0/17841401452709743/media",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "image_url",
+              "value": "={{ $('HTTP Request').item.json.secure_url }}"
+            },
+            {
+              "name": "caption",
+              "value": "={{ $('Social Media Content Factory').first().json.output.platform_posts.Instagram.caption }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f926ce91-db31-48b3-ab41-07e0938a051c",
+      "name": "Instagram Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2656,
+        1120
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "dRhVdNtpIo5xTjWI",
+          "name": "Facebook Graph account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v20.0",
+        "node": "17841401452709743",
+        "edge": "=media_publish",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "creation_id",
+                "value": "={{ $('Instagram Image').item.json.id }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "e1bd0d0a-508e-458f-b4b5-90ae25b1be92",
+      "name": "Instragram Post",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "position": [
+        2976,
+        1392
+      ],
+      "typeVersion": 1,
+      "alwaysOutputData": true,
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "dRhVdNtpIo5xTjWI",
+          "name": "Facebook Graph account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "person": "AYDybO-xPc",
+        "text": "={{ $('Social Media Content Factory').first().json.output.platform_posts.LinkedIn.post }}\n{{ $('Social Media Content Factory').first().json.output.platform_posts.LinkedIn.call_to_action }}\n{{ $('Social Media Content Factory').first().json.output.platform_posts.LinkedIn.hashtags }}\n{{ $('Social Media Content Factory').item.json.output.platform_posts.LinkedIn.call_to_action }}",
+        "shareMediaCategory": "IMAGE",
+        "additionalFields": {}
+      },
+      "id": "bc8869f6-a425-4fd6-9b89-ff2f2a5eaee9",
+      "name": "LinkedIn Post",
+      "type": "n8n-nodes-base.linkedIn",
+      "position": [
+        2960,
+        2080
+      ],
+      "typeVersion": 1,
+      "alwaysOutputData": true,
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "fsvobiTynYBZdaAC",
+          "name": "LinkedIn account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "prompt": "={{ $('Social Media Content Factory').item.json.output.platform_posts.Instagram.caption }}",
+        "options": {}
+      },
+      "id": "90c47760-f19c-47fe-af86-cd5b91b88c2d",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        1744,
+        512
+      ],
+      "typeVersion": 1.8,
+      "alwaysOutputData": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "YtlwhuleXCmGyGtC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "id": "c2ebf389-1381-4d65-a1ca-c390dbf4e342",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        2192,
+        1024
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "717eb37c-fc4c-4689-abb8-7f5f3501c65b",
+      "name": "Merge2",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        2080,
+        1200
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "ec507e04-a25f-402e-9cfb-4c01b5058ef2",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        496,
+        1824
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "responseFormat": "text"
+        }
+      },
+      "id": "7dd99d32-bce5-41b8-8cb7-8be6b6d09482",
+      "name": "gpt-4o-mini1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        720,
+        1840
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "YtlwhuleXCmGyGtC",
+          "name": "OpenAi account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "responseFormat": "text"
+        }
+      },
+      "id": "7a974b34-f8af-4c3d-9d7a-f76bf5809c91",
+      "name": "gpt-4o-mini2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        720,
+        2128
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "YtlwhuleXCmGyGtC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5c6edc76-1e3b-45b0-8baa-33a14c678150",
+              "name": "Instagram Post Result",
+              "type": "string",
+              "value": "={{ $json }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5f29d27a-a933-4270-a350-406ea583b419",
+      "name": "Instagram Result",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        3264,
+        1456
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5c6edc76-1e3b-45b0-8baa-33a14c678150",
+              "name": "Facebook Post Result",
+              "type": "string",
+              "value": "={{ $json }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d87987c1-fc45-44f7-ac5f-df06e740ce16",
+      "name": "Facebook Result",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        3248,
+        1872
+      ],
+      "typeVersion": 3.4,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5c6edc76-1e3b-45b0-8baa-33a14c678150",
+              "name": "LinkedIn Post Result",
+              "type": "string",
+              "value": "={{ $json }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6a71ac01-67ab-47f8-9053-253b74c32baf",
+      "name": "LinkedIn Result",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        3280,
+        2064
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "id": "c9d04cbe-a6be-48a3-969d-7ef34bb00a9a",
+      "name": "Merge Results",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        3664,
+        2064
+      ],
+      "typeVersion": 3,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create platform-specific social media content for the following topic:\n- Topic: {{ $('Basic LLM Chain').item.json.output.topic }}\n- Keywords: {{ $('Basic LLM Chain').item.json.output.keywords.join(', ') }}\n- Link: {{ $json.output.type === 'link' ? $('Telegram Trigger').item.json.message.text : '' }}\n\nGENERATE ONLY THESE 4 PLATFORMS: LinkedIn, Instagram, Facebook, Threads.\nDO NOT generate any other platforms.\nВАЖЛИВО: Пиши пост ТІЛЬКИ про те що вказано в Topic. Не вигадуй додаткових деталей.\nPLATFORM REQUIREMENTS:\n\nLinkedIn (Ukrainian — professional):\n- Tone: авторитетний, корисний, без води\n- Length: 3-5 речень + 1 сильний CTA\n- Style: починай з гачка — факт, питання або провокація\n- NO generic phrases like \"У сучасному світі\"\n- Include post_ua and post_en fields\n\nInstagram (Ukrainian — emotional):\n- Tone: надихаючий, живий, з емодзі\n- Length: 2-3 речення + CTA\n- Style: починай з емодзі, використовуй розривні рядки\n\nFacebook (Ukrainian — conversational):\n- Tone: дружній, як пост від людини, не бренду\n- Length: 2-4 речення\n- Style: питання до аудиторії, заклик до дискусії\n\nThreads (Ukrainian — conversational):\n- Tone: невимушений, як повідомлення другу\n- Length: 2-3 речення\n- Style: питання або цікавий факт що викликає обговорення\n- NO hashtags в тексті — тільки в масиві hashtags\n- \"post\" field MUST NOT be empty\n\nOUTPUT RULES (CRITICAL):\n1. Respond ONLY with valid JSON — no text before or after\n2. NO markdown code blocks\n3. ONLY 4 platforms: LinkedIn, Instagram, Facebook, Threads\n4. Each platform must have: image_suggestion, post, hashtags (array), call_to_action\n5. LinkedIn must have post_ua and post_en\n6. Threads must have post field — never empty\n7. Make hashtags relevant and specific\n8. Image suggestions must describe exact scene, colors, mood\n\nQUALITY RULES:\n- NO clichés: \"У сучасному світі\", \"В епоху діджиталізації\"\n- Every post must have ONE clear hook in first line\n- CTAs must be specific\n- Write like a human, not a corporate bot\n\n{{ $('Edit Fields').isExecuted ? 'Previous content was rejected. Feedback: ' + $('Edit Fields').item.json.feedback + '. Please create completely different content.' : '' }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert social media copywriter for workflows.diy — a leading n8n workflow automation brand. You write scroll-stopping, conversion-focused content that sounds human, not robotic.\n\nToday's date: {{ $now }}"
+        }
+      },
+      "id": "9e3a6677-1766-44ae-af38-ec6a1d284416",
+      "name": "Social Media Content Factory",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        976,
+        256
+      ],
+      "retryOnFail": true,
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Generate a clean, modern HTML email from the provided JSON data.\n\nDESIGN REQUIREMENTS:\n- Max-width: 600px, centered\n- Background: #f4f6f9\n- Card background: #ffffff\n- Border-radius: 12px\n- Box-shadow: 0 2px 8px rgba(0,0,0,0.08)\n- Font: Arial, sans-serif\n- Accent color per platform:\n  • LinkedIn: #0077B5\n  • Instagram: #E1306C\n  • Facebook: #1877F2\n  • Threads: #000000\n\nCARD STRUCTURE (for each platform):\n1. Platform header — colored left border 4px, platform name bold 18px\n2. Post text — 15px, line-height 1.6, color #333\n3. Image suggestion — italic 13px, color #888, background #f8f8f8, padding 8px, border-radius 6px\n4. Hashtags — inline chips, background #f0f4ff, color #0077B5, border-radius 20px\n5. CTA button — colored background, white text, border-radius 8px, padding 10px 20px\n\nEMAIL STRUCTURE:\n- START with this image block at the very top:\n<div style=\"text-align:center;padding:20px;background:#fff;border-radius:12px;margin-bottom:20px;\"><p style=\"font-weight:bold;font-size:16px;\">🖼 Згенероване зображення:</p><img src=\"{{ $('HTTP Request').item.json.secure_url }}\" style=\"width:100%;max-width:560px;border-radius:8px;\"></div>\n- THEN generate cards for: LinkedIn, Instagram, Facebook, Threads\n- Each platform MUST have its own card\n\nQUALITY RULES:\n- NO markdown, NO code blocks in output\n- Inline CSS only\n- Mobile-responsive\n- Preserve all emojis\n- Show post_ua for Instagram/Facebook, post_en for LinkedIn\n- For Threads use post field\n\nInput JSON: {{ $('Social Media Content Factory').item.json.output.toJsonString() }}\n\nOutput ONLY raw HTML. No comments. No explanations.",
+        "options": {}
+      },
+      "id": "3adf96cc-b29e-4f25-b1e4-bd61e1824c7a",
+      "name": "Prepare Content Review Email",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2480,
+        544
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "=You receive JSON with social media posting results. \nGenerate ONE HTML table showing real results.\n\nRULES:\n- Use ONLY real data from the JSON below — ignore any examples\n- Platforms to show: Instagram, Threads, Facebook, LinkedIn only\n- Status is \"✓ Success\" (green #28a745) if no error field and statusCode is 200-299\n- Status is \"✗ Error\" (red #dc3545) if error exists or statusCode is 4xx/5xx\n- Details: show real error message or \"Published successfully\"\n- Inline CSS only, no external styles\n- Return ONLY the HTML table, no explanation, no ```, no preamble\n\nHTML table structure:\n<table style=\"border-collapse:collapse;width:100%;font-family:Arial,sans-serif;border:1px solid #ddd;\">\n<thead><tr style=\"background-color:#007bff;color:#fff;\">\n<th style=\"border:1px solid #ddd;padding:12px;\">Platform</th>\n<th style=\"border:1px solid #ddd;padding:12px;\">Status</th>\n<th style=\"border:1px solid #ddd;padding:12px;\">Details</th>\n</tr></thead>\n<tbody><!-- rows here --></tbody>\n</table>\n\nREAL DATA TO PARSE:\n{{ $json.data.toJsonString() }}",
+        "options": {}
+      },
+      "id": "32f2d7b6-bcf7-4e5f-8024-4d0ac7fa0f56",
+      "name": "Prepare Results Email",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        736,
+        1680
+      ],
+      "typeVersion": 1.7,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "=Проаналізуй результати публікації в соціальні мережі та створи короткий звіт українською мовою.\n\nРезультати публікації:\n{{ $json.data.toJsonString() }}\n\nФормат відповіді:\n📊 Результати публікації:\n\n1. Instagram: [✅ Успішно / ❌ Помилка] — коротко що сталось\n2. Threads: [✅ Успішно / ❌ Помилка] — коротко що сталось\n3. Facebook: [✅ Успішно / ❌ Помилка] — коротко що сталось\n4. LinkedIn: [✅ Успішно / ❌ Помилка] — коротко що сталось\n\n📝 Підсумок: одне речення що загалом вийшло.\n\nПравила:\n- Відповідай ТІЛЬКИ українською мовою\n- Використовуй емодзі ✅ для успіху та ❌ для помилки\n- Пояснюй помилки простою мовою без технічних термінів\n- Максимум 2-3 речення на платформу\n- НЕ використовуй markdown символи * _ ` [ ]",
+        "options": {}
+      },
+      "id": "1671e557-640a-4959-a0c2-bad0a5fef1b5",
+      "name": "Prepare Results Message",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        736,
+        1968
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "sendTo": "=Flekz7777@gmail.com",
+        "subject": "🔥RESULTS🔥 Social Media Factory",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "52732b07-26ae-4341-a291-b97a7d630e5e",
+      "name": "Gmail Results",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1088,
+        1680
+      ],
+      "webhookId": "99561622-c7b1-4b18-b874-8d678e5a080b",
+      "typeVersion": 2.1,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "PKwUFuzSuY8oDDjB",
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "chatId": "-5244747366",
+        "text": "={{ $json.output.replace(/[*_`\\[\\]()~>#+=|{}.!\\-]/g, ' ') }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "a4bfe1c4-07b8-47b6-a09d-52676c5da375",
+      "name": "Telegram Results",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1088,
+        1968
+      ],
+      "webhookId": "eefef4c3-676d-413b-85d2-0fd355979698",
+      "typeVersion": 1.2,
+      "credentials": {
+        "telegramApi": {
+          "id": "W0YN4t18bA24Ytx8",
+          "name": "MindFlow Leads Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        576
+      ],
+      "id": "9da5ef35-0a62-4887-9098-23cd22c2fd71",
+      "name": "Search in Tavily",
+      "credentials": {
+        "tavilyApi": {
+          "id": "kxPSr3MrxCliuujm",
+          "name": "Tavily account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"name\": { \"type\": \"string\" },\n    \"description\": { \"type\": \"string\" },\n    \"platform_posts\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"LinkedIn\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"image_suggestion\": { \"type\": \"string\" },\n            \"post\": { \"type\": \"string\" },\n            \"hashtags\": { \"type\": \"array\", \"items\": { \"type\": \"string\" } },\n            \"call_to_action\": { \"type\": \"string\" }\n          },\n          \"required\": [\"post\"]\n        },\n        \"Instagram\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"image_suggestion\": { \"type\": \"string\" },\n            \"caption\": { \"type\": \"string\" },\n            \"hashtags\": { \"type\": \"array\", \"items\": { \"type\": \"string\" } },\n            \"call_to_action\": { \"type\": \"string\" }\n          },\n          \"required\": [\"caption\"]\n        },\n        \"Facebook\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"image_suggestion\": { \"type\": \"string\" },\n            \"post\": { \"type\": \"string\" },\n            \"hashtags\": { \"type\": \"array\", \"items\": { \"type\": \"string\" } },\n            \"call_to_action\": { \"type\": \"string\" }\n          },\n          \"required\": [\"post\"]\n        },\n        \"Threads\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"image_suggestion\": { \"type\": \"string\" },\n            \"post\": { \"type\": \"string\" },\n            \"hashtags\": { \"type\": \"array\", \"items\": { \"type\": \"string\" } },\n            \"call_to_action\": { \"type\": \"string\" },\n            \"emojis\": { \"type\": \"array\", \"items\": { \"type\": \"string\" } }\n          },\n          \"required\": [\"post\"]\n        }\n      },\n      \"required\": [\"LinkedIn\", \"Instagram\", \"Facebook\", \"Threads\"]\n    }\n  }\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1168,
+        432
+      ],
+      "id": "56f62d2d-852c-4e2f-ad3e-f064fbf6222d",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1216,
+        656
+      ],
+      "id": "3ca22aa2-7f49-413f-80ba-a56e8c8e80a2",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "YtlwhuleXCmGyGtC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v21.0",
+        "node": "985317414673210",
+        "edge": "feed",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "message",
+                "value": "={{ $('Social Media Content Factory').first().json.output.platform_posts.Facebook.post }}"
+              },
+              {
+                "name": "link",
+                "value": "={{ $('HTTP Request').first().json.secure_url }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        2640,
+        1648
+      ],
+      "id": "f2adbf85-8a10-4826-84b7-68ac5b915bf5",
+      "name": "Facebook Graph API",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "dRhVdNtpIo5xTjWI",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudinary.com/v1_1/dqa8vtu8w/image/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "=data"
+            },
+            {
+              "name": "upload_preset",
+              "value": "ml_default"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2144,
+        416
+      ],
+      "id": "5e461cff-e147-4f69-86e2-af2e82aed89f",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "smId1t5l1RGOtv9b",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.threads.net/v1.0/26998433106430981/threads",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "media_type",
+              "value": "IMAGE"
+            },
+            {
+              "name": "image_url",
+              "value": "={{ $('HTTP Request').first().json.secure_url }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Social Media Content Factory').first().json.output.platform_posts.Threads.post }}"
+            },
+            {
+              "name": "access_token",
+              "value": "THAAUfa5jgrhZABUVRHOWZAMeU5EbjlTRlExOGNSMjZAGVmt6SWRUNmFOYjNTbkVqa3Fha3JkTi1oRzVZAa2hyMW9QZAThUVWFPRjVtbWRMSVdfT09rdVVULTZA6b0IzQ2xCS0Y0bVQzOWJpTWtmQ05tb0RVRFNVd3E4X2hJdmg2LWJlRXo4WXUwQ3o2MU9fOHV5SUUZD"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2624,
+        1376
+      ],
+      "id": "fe649d57-e206-4daf-91bc-0a264604260c",
+      "name": "Threads Create"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.threads.net/v1.0/26998433106430981/threads_publish",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "creation_id",
+              "value": "={{ $('Threads Create').first().json.id }}"
+            },
+            {
+              "name": "access_token",
+              "value": "THAAUfa5jgrhZABUVRHOWZAMeU5EbjlTRlExOGNSMjZAGVmt6SWRUNmFOYjNTbkVqa3Fha3JkTi1oRzVZAa2hyMW9QZAThUVWFPRjVtbWRMSVdfT09rdVVULTZA6b0IzQ2xCS0Y0bVQzOWJpTWtmQ05tb0RVRFNVd3E4X2hJdmg2LWJlRXo4WXUwQ3o2MU9fOHV5SUUZD"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2976,
+        1616
+      ],
+      "id": "9002f60a-312d-41d9-a636-6532e2d5b2a2",
+      "name": "Threads Publish",
+      "retryOnFail": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('HTTP Request').first().json.secure_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2640,
+        2064
+      ],
+      "id": "f8364969-08b4-44f2-82d5-ae4f9be2af05",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1e904c38-6e39-435c-9cfd-536f1343c317",
+              "name": "Threads Post Result",
+              "value": "={{ $json }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3232,
+        1712
+      ],
+      "id": "bd3d4c4d-c02c-45fc-9ee4-fc628f0c22b3",
+      "name": "Threads Result"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1248,
+        304
+      ],
+      "id": "77ea1dc3-f3b4-4078-9de4-616613142eb2",
+      "name": "Telegram Trigger",
+      "webhookId": "b0644f68-ca44-421b-ab39-d117ba055233",
+      "credentials": {
+        "telegramApi": {
+          "id": "AoKrZOBcvo3RQ9nH",
+          "name": "bot content"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.caption || $('Telegram Trigger').item.json.message.text }}\n\nЦе опис проекту або контент від автоматизатора для публікації в соцмережах.\n\nПоверни JSON:\n{\n  \"type\": \"project або link або thought або regen\",\n  \"topic\": \"точно перефразуй що написано вище, до 15 слів\",\n  \"keywords\": [\"слово1\", \"слово2\", \"слово3\"],\n  \"tone_hint\": \"what you built або interesting resource або personal take\"\n}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Ти — класифікатор контенту. Відповідай ТІЛЬКИ валідним JSON, без будь-якого тексту до або після."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        160,
+        432
+      ],
+      "id": "8e73b3dc-a4eb-41ff-bb64-720f3a2d2895",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -32,
+        752
+      ],
+      "id": "1c7c0eef-55e4-4081-9c0f-4231159658fc",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "YtlwhuleXCmGyGtC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"type\": \"project\",\n  \"topic\": \"Побудував автоматизацію соцмереж на n8n\",\n  \"keywords\": [\"n8n\", \"автоматизація\", \"OpenAI\"],\n  \"tone_hint\": \"what you built\"\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        720
+      ],
+      "id": "6ed50f5e-1d85-4557-a371-32848065e1a8",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        272,
+        960
+      ],
+      "id": "aae516e3-b685-4d64-a8d8-164c2a006582",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "YtlwhuleXCmGyGtC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c123452e-1ad3-4463-8cf6-f4c6b22a8b75",
+              "leftValue": "={{ $json.output.type }}",
+              "rightValue": "regen",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "96921cef-3379-43ac-b018-25f86a8d9696",
+              "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+              "rightValue": "/",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        480
+      ],
+      "id": "4224d650-1927-49b3-b5b8-4b6b82480103",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "722559701",
+        "message": "=🔔 Новий пост готовий\n\n💡 Тема: {{ $('Basic LLM Chain').item.json.output.topic }}\n\n📝 LinkedIn:\n{{ $('Social Media Content Factory').item.json.output.platform_posts.LinkedIn.post }}\n\n📸 Instagram:\n{{ $('Social Media Content Factory').item.json.output.platform_posts.Instagram.caption }}\n\n👥 Facebook:\n{{ $('Social Media Content Factory').item.json.output.platform_posts.Facebook.post }}\n\n🧵 Threads:\n{{ $('Social Media Content Factory').item.json.output.platform_posts.Threads.post }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1136,
+        1008
+      ],
+      "id": "e0cb8aa6-5799-41d7-b45e-9266132f7de2",
+      "name": "Send message and wait for response",
+      "webhookId": "d9236ebd-cbb9-4f6c-97e9-ed45ccb1048d",
+      "credentials": {
+        "telegramApi": {
+          "id": "AoKrZOBcvo3RQ9nH",
+          "name": "bot content"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "722559701",
+        "file": "={{ $('If2').item.json.message.photo ? $('Telegram Trigger').item.json.message.photo[$('Telegram Trigger').item.json.message.photo.length - 1].file_id : $('HTTP Request').item.json.secure_url }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3040,
+        624
+      ],
+      "id": "a093a00a-edb2-4fcf-9a45-c907e2f40016",
+      "name": "Send a photo message",
+      "webhookId": "a88ec222-d251-4648-9d79-f7852197d097",
+      "credentials": {
+        "telegramApi": {
+          "id": "AoKrZOBcvo3RQ9nH",
+          "name": "bot content"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "722559701",
+        "message": "✏️ Напиши що змінити і я перегенерую пости.\n\nНаприклад: \"зроби більш технічно\" або \"додай більше емоцій\"",
+        "responseType": "freeText",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1616,
+        1280
+      ],
+      "id": "6c31a4d8-e840-44c7-a9c8-3971e49ff240",
+      "name": "Send message and wait for response1",
+      "webhookId": "b6ab6d0b-da6c-4482-b82e-b006403a80b2",
+      "credentials": {
+        "telegramApi": {
+          "id": "W0YN4t18bA24Ytx8",
+          "name": "MindFlow Leads Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fedd3309-e8be-4f53-9478-2ab7fa4f2ae5",
+              "name": "feedback",
+              "value": "={{ $json.data.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1968,
+        1424
+      ],
+      "id": "e6f47c09-d05d-42ea-bd42-36ff644741dd",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8907295d-7001-4039-8817-7ea9d0cd2978",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": "=true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1488,
+        864
+      ],
+      "id": "74c1f8af-eb43-487a-8be5-19815ef8febe",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-2024-05-13",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-2024-05-13"
+        },
+        "text": "аналізував що на картинці і робив пост про це",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        128
+      ],
+      "id": "9522c7e3-c022-42f0-ba3d-d7dca8eff571",
+      "name": "Analyze image",
+      "credentials": {
+        "openAiApi": {
+          "id": "YtlwhuleXCmGyGtC",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "16705b10-4e1f-4f6c-8f82-9e2c13871365",
+              "leftValue": "={{ $json.message.photo }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -848,
+        448
+      ],
+      "id": "6afd5d48-81e3-4539-8eeb-31de96e5cda7",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.photo[$('Telegram Trigger').item.json.message.photo.length - 1].file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -480,
+        128
+      ],
+      "id": "acf91d8c-30e9-4ba7-b7db-31d8fe70d93d",
+      "name": "Get a file",
+      "webhookId": "56ea1a71-7133-4300-8a0b-9d3e425f436c",
+      "credentials": {
+        "telegramApi": {
+          "id": "AoKrZOBcvo3RQ9nH",
+          "name": "bot content"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d8bbbe3f-d883-4fa5-8ce2-7e5baf09d427",
+              "leftValue": "={{ $('Telegram Trigger').item.json.message.photo }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1520,
+        256
+      ],
+      "id": "c23eabc9-3c51-472a-b924-fc110103b170",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.photo[$('Telegram Trigger').item.json.message.photo.length - 1].file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1840,
+        192
+      ],
+      "id": "dca73a11-176e-4ed8-b436-202748fdd3bd",
+      "name": "Get a file1",
+      "webhookId": "56ea1a71-7133-4300-8a0b-9d3e425f436c",
+      "credentials": {
+        "telegramApi": {
+          "id": "AoKrZOBcvo3RQ9nH",
+          "name": "bot content"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Instagram Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Facebook Graph API",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Threads Create",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Prepare Results Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare Results Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4o LLM": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Social Media Content Factory",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4o-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Prepare Content Review Email",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4o-mini1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Prepare Results Email",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4o-mini2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Prepare Results Message",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LinkedIn Post": {
+      "main": [
+        [
+          {
+            "node": "LinkedIn Result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Merge Results": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook Result": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Instagram Image": {
+      "main": [
+        [
+          {
+            "node": "Instragram Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Instragram Post": {
+      "main": [
+        [
+          {
+            "node": "Instagram Result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "LinkedIn Result": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Instagram Result": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Results Email": {
+      "main": [
+        [
+          {
+            "node": "Gmail Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Results Message": {
+      "main": [
+        [
+          {
+            "node": "Telegram Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Content Review Email": {
+      "main": [
+        [
+          {
+            "node": "Send a photo message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Social Media Content Factory": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search in Tavily": {
+      "ai_tool": [
+        [
+          {
+            "node": "Social Media Content Factory",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Social Media Content Factory",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook Graph API": {
+      "main": [
+        [
+          {
+            "node": "Facebook Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Prepare Content Review Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Threads Create": {
+      "main": [
+        [
+          {
+            "node": "Threads Publish",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads Publish": {
+      "main": [
+        [
+          {
+            "node": "Threads Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "LinkedIn Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads Result": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Social Media Content Factory",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a photo message": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Social Media Content Factory",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send message and wait for response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Get a file1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "28a59b2d-d58c-4fdf-a7ca-b6a8fe3956b2",
+  "meta": {
+    "templateId": "3066",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8fc414538f9a9e75b062104da82c5a546db6fada19d9632bdcff585131446182"
+  },
+  "id": "ROONp3hCTVHugz54",
+  "tags": []
+}
